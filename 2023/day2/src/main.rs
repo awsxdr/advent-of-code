@@ -1,9 +1,5 @@
 use regex::Regex;
 
-const MAX_RED: u32 = 12;
-const MAX_GREEN: u32 = 13;
-const MAX_BLUE: u32 = 14;
-
 #[derive(Debug)]
 struct GameInfo {
     id: u32,
@@ -19,7 +15,10 @@ fn main() {
     let game_ids = 
         lines
             .map(GameInfo::parse)
-            .filter_map(|g| if g.max_red <= MAX_RED && g.max_green <= MAX_GREEN && g.max_blue <= MAX_BLUE { Some(g.id) } else { None })
+            .map(|g| {
+                println!("{:?}", g);
+                g.max_red * g.max_green * g.max_blue
+            })
             .collect::<Vec<u32>>();
 
     println!("{:?}", game_ids.iter().sum::<u32>());
