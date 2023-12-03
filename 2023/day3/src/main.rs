@@ -28,7 +28,7 @@ fn main() {
         .collect::<Vec<MapNumber>>()
     ).collect();
 
-    let symbols_regex = Regex::new(r"[^\.\d]").unwrap();
+    let symbols_regex = Regex::new(r"\*").unwrap();
     let symbols: Vec<MapSymbol> = input.lines().into_iter().enumerate().flat_map(|(y, line)|
         symbols_regex.captures_iter(line).map(|capture| {
             let x = capture.get(0).unwrap().start();
@@ -37,11 +37,19 @@ fn main() {
         .collect::<Vec<MapSymbol>>()
     ).collect();
 
-    let valid_numbers: Vec<&MapNumber> = numbers.iter()
-        .filter(|n| symbols.iter().any(|s| n.is_next_to(s)))
+    let gear_numbers: Vec<u32> = symbols.iter()
+        .filter_map(|s| {
+            let adjacent_numbers: Vec<&MapNumber> = numbers.iter().filter(|n| n.is_next_to(s)).collect();
+
+            if adjacent_numbers.len() == 2 {
+                Some(adjacent_numbers.iter().map(|n| n.value).product::<u32>())
+            } else {
+                None
+            }
+        })
         .collect();
 
-    let result = valid_numbers.iter().map(|n| n.value).sum::<u32>();
+    let result = gear_numbers.iter().sum::<u32>();
 
     println!("{}", result);
 }
